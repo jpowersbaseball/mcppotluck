@@ -1,0 +1,24 @@
+
+https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=2025-07-04&hydrate=probablePitcher(note)
+
+http://statsapi.mlb.com/api/v1/teams/111/roster?rosterType=active&hydrate=person(stats(group=[hitting,pitching],type=season,season=2025))
+
+2025 Nationals 40-man roster with hitting and pitching stats (40-Man and Active)
+http://statsapi.mlb.com/api/v1/teams/120/roster?rosterType=40Man&hydrate=person(stats(group=[hitting,pitching],type=season,season=2025))
+http://statsapi.mlb.com/api/v1/teams/120/roster?rosterType=Active&hydrate=person(stats(group=[hitting,pitching],type=season,season=2025))
+
+Hydrations available for Aaron Judge
+http://statsapi.mlb.com/api/v1/people/592450?hydrate=hydrations
+
+Aaron Judge 2025 stats
+http://statsapi.mlb.com/api/v1/people/592450?hydrate=stats(group=[hitting],type=season,season=2025)
+
+2025 Nationals team hitting stats
+https://statsapi.mlb.com/api/v1/teams/120/stats?season=2025&group=hitting&stats=season
+
+2025 AL Standings (includes runs allowed and scored)
+https://statsapi.mlb.com/api/v1/standings?standingsType=regularSeason&leagueId=103&season=2025
+
+2025 NL Standings (includes runs allowed and scored)
+https://statsapi.mlb.com/api/v1/standings?standingsType=regularSeason&leagueId=104&season=2025
+
