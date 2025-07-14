@@ -8,51 +8,6 @@ from . import helpers
 
 router = APIRouter(prefix="/mlb", tags=["MLB"])
 
-def calculate_pythagorean_wins(
-    runs_scored: int,
-    runs_allowed: int,
-    games_played: int,
-    exponent: float = 1.83
-):
-    """
-    Calculate Bill James' Pythagorean wins and losses.
-    
-    The Pythagorean expectation formula:
-    Win% = (Runs Scored)^exponent / ((Runs Scored)^exponent + (Runs Allowed)^exponent)
-    
-    Args:
-        runs_scored (int): Total runs scored by the team
-        runs_allowed (int): Total runs allowed by the team
-        games_played (int): Total games played
-        exponent (float): Pythagorean exponent (default 1.83)
-    
-    Returns:
-        dict: Dictionary containing pythagorean wins, losses, new win percentage
-    """
-    
-    if runs_scored <= 0 or runs_allowed <= 0 or games_played <= 0:
-        return {
-                'pythagorean_wins': 0,
-                'pythagorean_losses': 0,
-                'pythagorean_win_pct': 0.0
-            }    
-    
-    # Calculate Pythagorean winning percentage
-    rs_exp = runs_scored ** exponent
-    ra_exp = runs_allowed ** exponent
-    
-    pythagorean_win_pct = rs_exp / (rs_exp + ra_exp)
-    
-    # Calculate expected wins and losses
-    pythagorean_wins = round(pythagorean_win_pct * games_played)
-    pythagorean_losses = games_played - pythagorean_wins
-    
-    return {
-        'pythagorean_wins': pythagorean_wins,
-        'pythagorean_losses': pythagorean_losses,
-        'pythagorean_win_pct': pythagorean_win_pct
-    }
-
 @router.get(
     "/standings",
     operation_id="get_mlb_standings",
@@ -97,24 +52,7 @@ async def get_mlb_standings(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        team_data = {}
-        
-        for curleagueid in [103, 104]:
-            subleague_url = helpers.mlbstatsapipref + 'standings?standingsType=regularSeason&leagueId=' + str(curleagueid) + '&season=' + str(useseason)
-            subleague_standings = helpers.get_mlb_stats(subleague_url)
-            for curdivdata in subleague_standings['records']:
-                for curteamdata in curdivdata['teamRecords']:
-                    team_dict = {}
-                    team_dict['team_id'] = curteamdata['team']['id']
-                    team_dict['team_name'] = curteamdata['team']['name']
-                    team_dict['wins'] = curteamdata['leagueRecord']['wins']
-                    team_dict['losses'] = curteamdata['leagueRecord']['losses']
-                    team_dict['runs_scored'] = curteamdata['runsScored']
-                    team_dict['runs_allowed'] = curteamdata['runsAllowed']
-                    curpyth = calculate_pythagorean_wins(team_dict['runs_scored'], team_dict['runs_allowed'], team_dict['wins'] + team_dict['losses'])
-                    team_dict['pythagorean_wins'] = curpyth['pythagorean_wins']
-                    team_dict['pythagorean_losses'] = curpyth['pythagorean_losses']
-                    team_data[team_dict['team_id']] = team_dict
+        team_data = helpers.get_major_league_standings(useseason)
         
         return team_data
     except Exception as e:
@@ -127,7 +65,8 @@ async def get_mlb_standings(
 Gets an MLB team's batting statistics for a given season, or their current statistics if no season is given.
 Batting statistics include hits, doubles, triples, home runs, walks, strikeouts, intentional walks,
 stolen bases, caught stealing, runs, rbi, ground outs, air outs, hit by pitch, at bats,
-plate appearances, games, batting average, on-base percentage, slugging percentage and ops.
+plate appearances, games, batting average, on-base percentage, slugging percentage, ops, PA per HR,
+PA per BB and PA per K.
 
 Required parameters:
 - `team_id`: The unique identifier number of the team.  
@@ -155,7 +94,8 @@ async def get_team_batting(
         dict: Batting statistics for the given team, along with basic identifying information.
         Batting statistics include hits, doubles, triples, home runs, walks, strikeouts, intentional walks,
         stolen bases, caught stealing, runs, rbi, ground outs, air outs, hit by pitch, at bats,
-        plate appearances, games, batting average, on-base percentage, slugging percentage and ops.
+        plate appearances, games, batting average, on-base percentage, slugging percentage, ops,
+        PA per HR, PA per BB and PA per K.
 
     Examples:
         - Get current batting statistics for the Washington Nationals:
@@ -169,35 +109,8 @@ async def get_team_batting(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        team_data = {}
+        team_data = helpers.get_team_batting_data(team_id, useseason)
 
-        team_stats_url = helpers.mlbstatsapipref + 'teams/' + str(team_id) + '/stats?group=hitting&stats=season&season=' + str(useseason)
-        team_stats = helpers.get_mlb_stats(team_stats_url)
-        team_split = team_stats['stats'][0]['splits'][0]
-        team_data['team_id'] = team_id
-        team_data['team_name'] = team_split['team']['name']
-        team_data['games'] = team_split['stat']['gamesPlayed']
-        team_data['hits'] = team_split['stat']['hits']
-        team_data['doubles'] = team_split['stat']['doubles']
-        team_data['triples'] = team_split['stat']['triples']
-        team_data['home_runs'] = team_split['stat']['homeRuns']
-        team_data['walks'] = team_split['stat']['baseOnBalls']
-        team_data['strikeouts'] = team_split['stat']['strikeOuts']
-        team_data['intentional_walks'] = team_split['stat']['intentionalWalks']
-        team_data['stolen_bases'] = team_split['stat']['stolenBases']
-        team_data['caught_stealing'] = team_split['stat']['caughtStealing']
-        team_data['runs'] = team_split['stat']['runs']
-        team_data['rbi'] = team_split['stat']['rbi']
-        team_data['ground_outs'] = team_split['stat']['groundOuts']
-        team_data['air_outs'] = team_split['stat']['airOuts']
-        team_data['hit_by_pitch'] = team_split['stat']['hitByPitch']
-        team_data['at_bats'] = team_split['stat']['atBats']
-        team_data['plate_appearances'] = team_split['stat']['plateAppearances']
-        team_data['batting_average'] = float(team_split['stat']['avg'])
-        team_data['on_base_percentage'] = float(team_split['stat']['obp'])
-        team_data['slugging_percentage'] = float(team_split['stat']['slg'])
-        team_data['ops'] = float(team_split['stat']['ops'])
-        
         return team_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -254,43 +167,7 @@ async def get_team_pitching(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        team_data = {}
-        
-        team_stats_url = helpers.mlbstatsapipref + 'teams/' + str(team_id) + '/stats?group=pitching&stats=season&season=' + str(useseason)
-        team_stats = helpers.get_mlb_stats(team_stats_url)
-        team_split = team_stats['stats'][0]['splits'][0]
-        team_data['team_id'] = team_id
-        team_data['team_name'] = team_split['team']['name']
-        team_data['wins'] = team_split['stat']['wins']
-        team_data['losses'] = team_split['stat']['losses']
-        team_data['saves'] = team_split['stat']['saves']
-        team_data['games'] = team_split['stat']['gamesPlayed']
-        team_data['games_started'] = team_split['stat']['gamesStarted']
-        team_data['innings_pitched'] = float(team_split['stat']['inningsPitched'])
-        team_data['hits'] = team_split['stat']['hits']
-        team_data['home_runs'] = team_split['stat']['homeRuns']
-        team_data['walks'] = team_split['stat']['baseOnBalls']
-        team_data['strikeouts'] = team_split['stat']['strikeOuts']
-        team_data['intentional_walks'] = team_split['stat']['intentionalWalks']
-        team_data['runs'] = team_split['stat']['runs']
-        team_data['earned_runs'] = team_split['stat']['earnedRuns']
-        team_data['ground_outs'] = team_split['stat']['groundOuts']
-        team_data['air_outs'] = team_split['stat']['airOuts']
-        team_data['hit_by_pitch'] = team_split['stat']['hitByPitch']
-        team_data['batters_faced'] = team_split['stat']['battersFaced']
-        team_data['blown_saves'] = team_split['stat']['blownSaves']
-        team_data['batting_average'] = float(team_split['stat']['avg'])
-        team_data['on_base_percentage'] = float(team_split['stat']['obp'])
-        team_data['slugging_percentage'] = float(team_split['stat']['slg'])
-        team_data['ops'] = float(team_split['stat']['ops'])
-        team_data['whip'] = float(team_split['stat']['whip'])
-        team_data['era'] = float(team_split['stat']['era'])
-        team_data['strike_percentage'] = team_split['stat']['strikePercentage']
-        team_data['strikeout_walk_ratio'] = team_split['stat']['strikeoutWalkRatio']
-        team_data['strikeout_per_9_inning'] = team_split['stat']['strikeoutsPer9Inn']
-        team_data['walks_per_9_inning'] = team_split['stat']['walksPer9Inn']
-        team_data['hits_per_9_inning'] = team_split['stat']['hitsPer9Inn']
-        team_data['home_runs_per_9_inning'] = team_split['stat']['homeRunsPer9']
+        team_data = helpers.get_team_pitching_data(team_id, useseason)
         
         return team_data
     except Exception as e:
@@ -342,17 +219,8 @@ async def get_mlb_roster(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        roster_data = {}
+        roster_data = helpers.get_roster(team_id, useseason)
         
-        roster_url = helpers.mlbstatsapipref + 'teams/' + str(team_id) + '/roster?rosterType=40Man&season=' + str(useseason)
-        roster_info = helpers.get_mlb_stats(roster_url)
-        for curplayer in roster_info['roster']:
-            player_data = {}
-            player_data['player_id'] = curplayer['person']['id']
-            player_data['player_name'] = curplayer['person']['fullName']
-            player_data['position'] = curplayer['position']['name']
-            roster_data[player_data['player_id']] = player_data
-
         return roster_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -406,58 +274,7 @@ async def get_player_batting(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        player_data = {}
-
-        player_stats_url = helpers.mlbstatsapipref + 'people/' + str(player_id) + '?hydrate=stats(group=[hitting],type=season,season=' + str(useseason) + ')'
-        player_stats = helpers.get_mlb_stats(player_stats_url)
-        player_data['player_id'] = player_id
-        player_data['player_name'] = player_stats['people'][0]['fullName']
-        player_data['age'] = player_stats['people'][0]['currentAge']
-        if 'stats' in player_stats['people'][0]:
-            player_split = player_stats['people'][0]['stats'][0]['splits'][0]
-            player_data['games'] = player_split['stat']['gamesPlayed']
-            player_data['hits'] = player_split['stat']['hits']
-            player_data['doubles'] = player_split['stat']['doubles']
-            player_data['triples'] = player_split['stat']['triples']
-            player_data['home_runs'] = player_split['stat']['homeRuns']
-            player_data['walks'] = player_split['stat']['baseOnBalls']
-            player_data['strikeouts'] = player_split['stat']['strikeOuts']
-            player_data['intentional_walks'] = player_split['stat']['intentionalWalks']
-            player_data['stolen_bases'] = player_split['stat']['stolenBases']
-            player_data['caught_stealing'] = player_split['stat']['caughtStealing']
-            player_data['runs'] = player_split['stat']['runs']
-            player_data['rbi'] = player_split['stat']['rbi']
-            player_data['ground_outs'] = player_split['stat']['groundOuts']
-            player_data['air_outs'] = player_split['stat']['airOuts']
-            player_data['hit_by_pitch'] = player_split['stat']['hitByPitch']
-            player_data['at_bats'] = player_split['stat']['atBats']
-            player_data['plate_appearances'] = player_split['stat']['plateAppearances']
-            player_data['batting_average'] = float(player_split['stat']['avg'])
-            player_data['on_base_percentage'] = float(player_split['stat']['obp'])
-            player_data['slugging_percentage'] = float(player_split['stat']['slg'])
-            player_data['ops'] = float(player_split['stat']['ops'])
-        else:
-            player_data['games'] = 0
-            player_data['hits'] = 0
-            player_data['doubles'] = 0
-            player_data['triples'] = 0
-            player_data['home_runs'] = 0
-            player_data['walks'] = 0
-            player_data['strikeouts'] = 0
-            player_data['intentional_walks'] = 0
-            player_data['stolen_bases'] = 0
-            player_data['caught_stealing'] = 0
-            player_data['runs'] = 0
-            player_data['rbi'] = 0
-            player_data['ground_outs'] = 0
-            player_data['air_outs'] = 0
-            player_data['hit_by_pitch'] = 0
-            player_data['at_bats'] = 0
-            player_data['plate_appearances'] = 0
-            player_data['batting_average'] = 0.0
-            player_data['on_base_percentage'] = 0.0
-            player_data['slugging_percentage'] = 0.0
-            player_data['ops'] = 0.0
+        player_data = helpers.get_player_batting_data(player_id, useseason)
         
         return player_data
     except Exception as e:
@@ -515,76 +332,7 @@ async def get_player_pitching(
         if season is not None and season < useseason and season > 1876:
             useseason = season
         
-        player_data = {}
-        
-        player_stats_url = helpers.mlbstatsapipref + 'people/' + str(player_id) + '?hydrate=stats(group=[pitching],type=season,season=' + str(useseason) + ')'
-        player_stats = helpers.get_mlb_stats(player_stats_url)
-        player_data['player_id'] = player_id
-        player_data['player_name'] = player_stats['people'][0]['fullName']
-        player_data['age'] = player_stats['people'][0]['currentAge']
-        if 'stats' in player_stats['people'][0]:
-            player_split = player_stats['people'][0]['stats'][0]['splits'][0]
-            player_data['wins'] = player_split['stat']['wins']
-            player_data['losses'] = player_split['stat']['losses']
-            player_data['saves'] = player_split['stat']['saves']
-            player_data['games'] = player_split['stat']['gamesPlayed']
-            player_data['games_started'] = player_split['stat']['gamesStarted']
-            player_data['innings_pitched'] = float(player_split['stat']['inningsPitched'])
-            player_data['hits'] = player_split['stat']['hits']
-            player_data['home_runs'] = player_split['stat']['homeRuns']
-            player_data['walks'] = player_split['stat']['baseOnBalls']
-            player_data['strikeouts'] = player_split['stat']['strikeOuts']
-            player_data['intentional_walks'] = player_split['stat']['intentionalWalks']
-            player_data['runs'] = player_split['stat']['runs']
-            player_data['earned_runs'] = player_split['stat']['earnedRuns']
-            player_data['ground_outs'] = player_split['stat']['groundOuts']
-            player_data['air_outs'] = player_split['stat']['airOuts']
-            player_data['hit_by_pitch'] = player_split['stat']['hitByPitch']
-            player_data['batters_faced'] = player_split['stat']['battersFaced']
-            player_data['blown_saves'] = player_split['stat']['blownSaves']
-            player_data['batting_average'] = float(player_split['stat']['avg'])
-            player_data['on_base_percentage'] = float(player_split['stat']['obp'])
-            player_data['slugging_percentage'] = float(player_split['stat']['slg'])
-            player_data['ops'] = float(player_split['stat']['ops'])
-            player_data['whip'] = float(player_split['stat']['whip'])
-            player_data['era'] = float(player_split['stat']['era'])
-            player_data['strike_percentage'] = float(player_split['stat']['strikePercentage'])
-            player_data['strikeout_walk_ratio'] = float(player_split['stat']['strikeoutWalkRatio'])
-            player_data['strikeout_per_9_inning'] = float(player_split['stat']['strikeoutsPer9Inn'])
-            player_data['walks_per_9_inning'] = float(player_split['stat']['walksPer9Inn'])
-            player_data['hits_per_9_inning'] = float(player_split['stat']['hitsPer9Inn'])
-            player_data['home_runs_per_9_inning'] = float(player_split['stat']['homeRunsPer9'])
-        else:
-            player_data['wins'] = 0
-            player_data['losses'] = 0
-            player_data['saves'] = 0
-            player_data['games'] = 0
-            player_data['games_started'] = 0
-            player_data['innings_pitched'] = 0.0
-            player_data['hits'] = 0
-            player_data['home_runs'] = 0
-            player_data['walks'] = 0
-            player_data['strikeouts'] = 0
-            player_data['intentional_walks'] = 0
-            player_data['runs'] = 0
-            player_data['earned_runs'] = 0
-            player_data['ground_outs'] = 0
-            player_data['air_outs'] = 0
-            player_data['hit_by_pitch'] = 0
-            player_data['batters_faced'] = 0
-            player_data['blown_saves'] = 0
-            player_data['batting_average'] = 0.0
-            player_data['on_base_percentage'] = 0.0
-            player_data['slugging_percentage'] = 0.0
-            player_data['ops'] = 0.0
-            player_data['whip'] = 0.0
-            player_data['era'] = 0.0
-            player_data['strike_percentage'] = 0.0
-            player_data['strikeout_walk_ratio'] = 0.0
-            player_data['strikeout_per_9_inning'] = 0.0
-            player_data['walks_per_9_inning'] = 0.0
-            player_data['hits_per_9_inning'] = 0.0
-            player_data['home_runs_per_9_inning'] = 0.0
+        player_data = helpers.get_player_pitching_data(player_id, useseason)
         
         return player_data
     except Exception as e:
@@ -619,20 +367,11 @@ async def lookup_player(
 
     Examples:
         - Get Aaron Judge's MLB unique id:
-            /mlb/player_name=Aaron+Judge
+            /mlb/playerid?player_name=Aaron+Judge
     """
     
     try:
-        player_data = {}
-        
-        lookup_url = helpers.mlbstatsapipref + 'people/search?names=' + player_name
-        lookup_data = helpers.get_mlb_stats(lookup_url)
-        if 'people' in lookup_data and len(lookup_data['people']) > 0:
-            player_data['player_name'] = lookup_data['people'][0]['fullName']
-            player_data['player_id'] = lookup_data['people'][0]['id']
-        else:
-            player_data['player_name'] = 'NA'
-            player_data['player_id'] = 0
+        player_data = helpers.lookup_player_id(player_name)
         
         return player_data
     except Exception as e:
@@ -671,30 +410,48 @@ async def lookup_team(
     """
     
     try:
-        usename = team_name.lower().strip()
-        
-        name2id = {}
-        name2beautiful = {}
-        
-        for curleagueid in [103, 104]:
-            subleague_url = helpers.mlbstatsapipref + 'standings?standingsType=regularSeason&leagueId=' + str(curleagueid) + '&season=2025'
-            subleague_standings = helpers.get_mlb_stats(subleague_url)
-            for curdivdata in subleague_standings['records']:
-                for curteamdata in curdivdata['teamRecords']:
-                    cleanname = curteamdata['team']['name'].lower().strip()
-                    name2id[cleanname] = curteamdata['team']['id']
-                    name2beautiful[cleanname] = curteamdata['team']['name']
-        
-        ret_data = {}
-        if usename in name2id:
-            ret_data['team_id'] = name2id[usename]
-            ret_data['team_name'] = name2beautiful[usename]
-        if len(ret_data) == 0:
-            for curname, curid in name2id.items():
-                if usename in curname:
-                    ret_data['team_id'] = curid
-                    ret_data['team_name'] = name2beautiful[curname]
+        ret_data = helpers.lookup_team_id(team_name)
         
         return ret_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get(
+    "/playerteam",
+    operation_id="lookup_player_team",
+    description="""
+Gets the MLB unique identifier and name of the current team for a player given his id.
+
+Returns the team id and name and the player's name given the player id as input.
+
+Required parameters:
+- `player_id`: The MLB id of the player, for example 592450
+
+Example:
+- `/mlb/playerteam?player_id=592450` (returns "New York Yankees", 147, "Aaron Judge")
+"""
+)
+async def lookup_player_team(
+    player_id: int
+):
+    """
+    Gets the MLB unique identifier and name of the current team for a player given his id.
+
+    Parameters:
+        player_id (int): The MLB id of the player, for example 592450
+
+    Returns:
+        dict: The player's team's name and MLB unique identifier, and the player's name
+
+    Examples:
+        - Get Aaron Judge's current team:
+            /mlb/playerteam?player_id=592450
+    """
+    
+    try:
+        player_data = helpers.getTeamForPlayer(player_id)
+        
+        return player_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

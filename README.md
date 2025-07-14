@@ -138,6 +138,11 @@ recognizes (unclear how well this works).
 
 Example: http://localhost:8080/mlb/teamid?team_name=Washington+Nationals
 
+### /mlb/playerteam
+
+Returns a player's current MLB team name and ID.  Requires a player ID 
+
+Example: http://localhost:8080/mlb/playerteam?player_id=624585
 
 ### Current maintainers
 
