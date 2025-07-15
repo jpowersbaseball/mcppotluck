@@ -12,20 +12,22 @@ from fastapi_mcp import FastApiMCP
 import uvicorn
 
 # msppotluck imports
+from mcppotluck.logger_config import setup_logging, get_logger
+setup_logging()
+logger = get_logger()
 from mcppotluck.baseball_server import router as mlb_router
 from mcppotluck import helpers
 
 helpers.initplayermap()
 
 def main(): # type: () -> None
-    logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.ERROR)
     leParser = argparse.ArgumentParser()
-    leParser.add_argument('--operation', help='What do you want MLB chat to do? (test|mcp)')
+    leParser.add_argument('--operation', help='What do you want MCP Potluck to do? (test|mcp)')
     leParser.add_argument('--config', help='A JSON file with settings, credentials, etc.')
     lesArgs = leParser.parse_args()
   
     if not hasattr(lesArgs, 'operation') or lesArgs.operation is None:
-        logging.error('The MCP needs to know what to do.')
+        logger.error('The MCP needs to know what to do.')
         leParser.print_help()
         sys.exit(2)
   
@@ -35,36 +37,36 @@ def main(): # type: () -> None
             configs = json.load(f)
   
     if lesArgs.operation == 'test':
-        print("I think I am getting MLB standings for 2025")
-        print("=============================================")
-        print(json.dumps(helpers.get_major_league_standings(2025), indent=2))
-        print("I think I am getting 2025 batting data for the Nationals")
-        print("=============================================")
-        print(json.dumps(helpers.get_team_batting_data(120, 2025), indent=2))
-        print("I think I am getting 2025 pitching data for the Nationals")
-        print("=============================================")
-        print(json.dumps(helpers.get_team_pitching_data(120, 2025), indent=2))
-        print("I think I am getting 2025 roster data for the Nationals")
-        print("=============================================")
-        print(json.dumps(helpers.get_roster(120, 2025), indent=2))
-        print("I think I am getting 2025 batting data for Aaron Judge")
-        print("=============================================")
-        print(json.dumps(helpers.get_player_batting_data(592450, 2025), indent=2))
-        print("I think I am getting 2025 pitching data for Allan Winans")
-        print("=============================================")
-        print(json.dumps(helpers.get_player_pitching_data(642216, 2025), indent=2))
-        print("I think I am looking up Aaron Judge's player ID")
-        print("=============================================")
-        print(json.dumps(helpers.lookup_player_id("Aaron Judge"), indent=2))
-        print("I think I am looking up the Washington Nationals team ID")
-        print("=============================================")
-        print(json.dumps(helpers.lookup_team_id("Washington Nationals"), indent=2))
-        print("I think I am looking up the Nationals team ID")
-        print("=============================================")
-        print(json.dumps(helpers.lookup_team_id("Nationals"), indent=2))
-        print("I think I am getting Aaron Judge's current team")
-        print("=============================================")
-        print(json.dumps(helpers.getTeamForPlayer(592450), indent=2))
+        logger.info("I think I am getting MLB standings for 2025")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_major_league_standings(2025), indent=2))
+        logger.info("I think I am getting 2025 batting data for the Nationals")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_team_batting_data(120, 2025), indent=2))
+        logger.info("I think I am getting 2025 pitching data for the Nationals")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_team_pitching_data(120, 2025), indent=2))
+        logger.info("I think I am getting 2025 roster data for the Nationals")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_roster(120, 2025), indent=2))
+        logger.info("I think I am getting 2025 batting data for Aaron Judge")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_player_batting_data(592450, 2025), indent=2))
+        logger.info("I think I am getting 2025 pitching data for Allan Winans")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.get_player_pitching_data(642216, 2025), indent=2))
+        logger.info("I think I am looking up Aaron Judge's player ID")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.lookup_player_id("Aaron Judge"), indent=2))
+        logger.info("I think I am looking up the Washington Nationals team ID")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.lookup_team_id("Washington Nationals"), indent=2))
+        logger.info("I think I am looking up the Nationals team ID")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.lookup_team_id("Nationals"), indent=2))
+        logger.info("I think I am getting Aaron Judge's current team")
+        logger.info("=============================================")
+        logger.info(json.dumps(helpers.getTeamForPlayer(592450), indent=2))
         
     elif lesArgs.operation == 'mcp':
         # Initialize Fast API

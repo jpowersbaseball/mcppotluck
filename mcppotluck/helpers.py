@@ -6,6 +6,10 @@ import json
 import requests
 from requests.exceptions import HTTPError
 
+# mcppotluck imports
+from mcppotluck.logger_config import get_logger
+logger = get_logger()
+
 mlb_teams = {
     "141": "Toronto Blue Jays",
     "147": "New York Yankees",
@@ -64,9 +68,11 @@ def get_mlb_stats(
         return jsonResponse
 
     except HTTPError as http_err:
-        print(f'HTTP error occurred: {http_err}')
+        logger.error(f'HTTP error occurred: {http_err}')
+        raise Exception(str(e))
     except Exception as err:
-        print(f'Other error occurred: {err}')
+        logger.error(f'Other error occurred: {err}')
+        raise Exception(str(e))
 
 def calculate_pythagorean_wins(
     runs_scored: int,
@@ -156,6 +162,7 @@ def get_major_league_standings(
         return team_data
         
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def init_batting_stats():
@@ -260,6 +267,7 @@ def get_team_batting_data(
         
         return team_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def init_pitching_stats():
@@ -384,6 +392,7 @@ def get_team_pitching_data(
         
         return team_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def get_roster(
@@ -422,6 +431,7 @@ def get_roster(
 
         return roster_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def get_player_batting_data(
@@ -484,6 +494,7 @@ def get_player_batting_data(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def get_player_pitching_data(
@@ -559,6 +570,7 @@ def get_player_pitching_data(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def lookup_player_id(
@@ -595,6 +607,7 @@ def lookup_player_id(
 
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
     
 def lookup_team_id(
@@ -638,6 +651,7 @@ def lookup_team_id(
         
         return ret_data
     except Exception as e:
+        logger.error(str(e))
         raise Exception(str(e))
 
 def initplayermap():

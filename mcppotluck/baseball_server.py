@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException
 
-# immo imports
+# mcppotluck imports
 from . import helpers
+from mcppotluck.logger_config import get_logger
+logger = get_logger()
 
 router = APIRouter(prefix="/mlb", tags=["MLB"])
 
@@ -56,6 +58,7 @@ async def get_mlb_standings(
         
         return team_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -113,6 +116,7 @@ async def get_team_batting(
 
         return team_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -171,6 +175,7 @@ async def get_team_pitching(
         
         return team_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -223,6 +228,7 @@ async def get_mlb_roster(
         
         return roster_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -278,6 +284,7 @@ async def get_player_batting(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -336,6 +343,7 @@ async def get_player_pitching(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -375,6 +383,7 @@ async def lookup_player(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -414,6 +423,7 @@ async def lookup_team(
         
         return ret_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get(
@@ -453,5 +463,6 @@ async def lookup_player_team(
         
         return player_data
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
