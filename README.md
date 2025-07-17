@@ -38,11 +38,18 @@ beyond:
    pip install -r requirements.txt
    ```
 
-To run, simply invoke as a python module:
+To run a test of the connection to MLB Stats:
 
 ```bash
    
-   python -m mcppotluck
+   python -m mcppotluck --operation test
+   ```
+
+To run the server:
+
+```bash
+   
+   python -m mcppotluck --operation mcp
    ```
 
 
