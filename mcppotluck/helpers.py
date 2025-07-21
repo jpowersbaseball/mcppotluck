@@ -261,9 +261,12 @@ def get_team_batting_data(
         team_data['slugging_percentage'] = float(team_split['stat']['slg'])
         team_data['ops'] = float(team_split['stat']['ops'])
         if int(team_data['plate_appearances']) > 0:
-            team_data['plate_appearances_per_home_run'] = round(int(team_data['plate_appearances']) / int(team_data['home_runs']), 1)
-            team_data['plate_appearances_per_walk'] = round(int(team_data['plate_appearances']) / int(team_data['walks']), 1)
-            team_data['plate_appearances_per_strikeout'] = round(int(team_data['plate_appearances']) / int(team_data['strikeouts']), 1)
+            if int(team_data['home_runs']) > 0:
+                team_data['plate_appearances_per_home_run'] = round(int(team_data['plate_appearances']) / int(team_data['home_runs']), 1)
+            if int(team_data['walks']) > 0:
+                team_data['plate_appearances_per_walk'] = round(int(team_data['plate_appearances']) / int(team_data['walks']), 1)
+            if int(team_data['strikeouts']) > 0:
+                team_data['plate_appearances_per_strikeout'] = round(int(team_data['plate_appearances']) / int(team_data['strikeouts']), 1)
         
         return team_data
     except Exception as e:
@@ -488,9 +491,12 @@ def get_player_batting_data(
             player_data['slugging_percentage'] = float(player_split['stat']['slg'])
             player_data['ops'] = float(player_split['stat']['ops'])
             if int(player_data['plate_appearances']) > 0:
-                player_data['plate_appearances_per_home_run'] = round(int(player_data['plate_appearances']) / int(player_data['home_runs']), 1)
-                player_data['plate_appearances_per_walk'] = round(int(player_data['plate_appearances']) / int(player_data['walks']), 1)
-                player_data['plate_appearances_per_strikeout'] = round(int(player_data['plate_appearances']) / int(player_data['strikeouts']), 1)
+                if int(player_data['home_runs']) > 0:
+                    player_data['plate_appearances_per_home_run'] = round(int(player_data['plate_appearances']) / int(player_data['home_runs']), 1)
+                if int(player_data['walks']) > 0:
+                    player_data['plate_appearances_per_walk'] = round(int(player_data['plate_appearances']) / int(player_data['walks']), 1)
+                if int(player_data['strikeouts']) > 0:
+                    player_data['plate_appearances_per_strikeout'] = round(int(player_data['plate_appearances']) / int(player_data['strikeouts']), 1)
         
         return player_data
     except Exception as e:

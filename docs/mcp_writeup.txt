@@ -1,4 +1,14 @@
-Model Context Protocol (MCP) is a relatively new standard created by Anthropic and now supported by OpenAI, Microsoft and Google.  The aspect of MCP that caught my attention was the ability of MCP-supporting LLMs to make requests of the client to go perform some action using a tool and report the results back to the message thread.  I decided to implement an MLB General Manager assistant in view of the impending 2025 trade deadline (July 31).  I wanted to see if access to tools that deliver real-time MLB statistics would improve the quality of trades suggested by the LLM.  
+Model Context Protocol (MCP) is a relatively new standard created by Anthropic and now supported by OpenAI, Microsoft and Google.  The aspect of MCP that caught my attention was the ability of MCP-supporting LLMs to make requests of the client to go perform some action using a tool and report the results back to the message thread.  I decided to implement an MLB General Manager assistant in view of what was then the impending 2025 trade deadline (July 31).  I wanted to see if access to tools that deliver real-time MLB statistics would improve the quality of trades suggested by the LLM.  The first-class objects I am using are:
+
+* Focus Team - the team whose GM the LLM is supposed to be advising.
+* Trade Goal - the reasons a Focus Team might want to trade - typically, strong performing teams are Buyers, trying to get near-term improvements for the playoffs.  Weak teams are Sellers, trying to get younger players who can improve the team in future seasons.  Financially strapped teams often just want to shed veterans with high salaries.
+* Trade Candidates - players on the Focus Team's roster that would be OK to trade away if that would move the team closer to its Trade Goals.
+* Trade Partners - teams that the Focus Team should look at trading with.  Typically, Buyers trade with Sellers.
+* Trade Targets - players on Trade Partner teams that would move the Focus Team closer to its Trade Goals.
+
+The experiment was conductied with canned prompts in a headless manner - I didn't want conversational drift to make it hard for me to compare the setup's performance across the league.
+
+I chose a relatively lightweight, older LLM (Anthropic Haiku 3.5) so that I could see real evidence that access to a live baseball statistics tool would improve the LLM's inference.
 
 Before diving into the experiment, let's remember what MCP does and does not do.  MCP does not necessarily allow LLMs to directly use tools - that's a choice that a client can implement.  In my view, however, it is better to think of the MCP-enabled LLM as part of an organized crime racket.  I'll demonstrate with a small teleplay script:
 
@@ -362,4 +372,287 @@ Would you like me to elaborate on any of these potential trade scenarios or expl
 At this point, I was out of canned prompts and probably soon out of Anthropic tokens, so I closed the session, quite pleased with the results.  
 
 When backed with tools that deliver high-accuracy, real-time data, it appears that MCP has great potential to avoid the typical LLM hallucinations and drive down to a useful level of detail for pretty intensive inferences.
+
+
+======================= MEDIUM SUBMISSION ===============================
+Model Context Protocol at the MLB Trade Deadline
+Model Context Protocol (MCP) is a relatively new standard created by Anthropic and now supported by OpenAI, Microsoft and Google. The aspect of MCP that caught my attention was the ability of MCP-supporting LLMs to make requests of the client to go perform some action using a tool and report the results back to the message thread. I decided to implement an MLB General Manager assistant in view of what was then the impending 2025 trade deadline (July 31). I wanted to see if access to tools that deliver real-time MLB statistics would improve the quality of trades suggested by the LLM. The first-class objects I am using are:
+Focus Team - the team whose GM the LLM is supposed to be advising.
+Trade Goal - the reasons a Focus Team might want to trade - typically, strong performing teams are Buyers, trying to get near-term improvements for the playoffs. Weak teams are Sellers, trying to get younger players who can improve the team in future seasons. Financially strapped teams often just want to shed veterans with high salaries.
+Trade Candidates - players on the Focus Team's roster that would be OK to trade away if that would move the team closer to its Trade Goals.
+Trade Partners - teams that the Focus Team should look at trading with. Typically, Buyers trade with Sellers.
+Trade Targets - players on Trade Partner teams that would move the Focus Team closer to its Trade Goals.
+
+The experiment was conducted with canned prompts in a headless manner - I didn't want conversational drift to make it hard for me to compare the setup's performance across the league.
+I chose a relatively lightweight, older LLM (Anthropic Haiku 3.5) to improve my chances of seeing evidence that access to a live baseball statistics tool would improve an LLM's inference.
+What is MCP?
+Before diving into the experiment, let's remember what MCP does and does not do. MCP does not necessarily allow LLMs to directly use tools - that's a choice that a client can implement. In my view, however, it is better to think of the MCP-enabled LLM as part of an organized crime racket. I'll demonstrate with a small teleplay script:
+Characters:
+Don Claude, an LLM
+The Consigliere, an MCP Client
+The Hired Goon, an MCP Server
+The Shopkeeper, a Human User
+Don Gemini, a competing LLM
+Act 1, Scene 1
+ 
+ (The Consigliere and The Hired Goon are in a shadowy room)
+THE CONSIGLIERE
+What services do you offer?
+THE HIRED GOON
+Extortion, Loan-sharking, Gambling and Murder-for-Hire
+Act 1, Scene 2
+(The Consigliere and Don Claude are in Don Claude's office)
+THE CONSIGLIERE
+Sir, the Hired Goon can perform Extortion, Loan-sharking, Gambling
+and Murder-for-Hire
+DON CLAUDE
+Bene
+Act 2, Scene 1
+(The Shopkeeper, The Consigliere and Don Claude are in
+ Don Claude's office)
+THE SHOPKEEPER
+Don Claude, I cannot make my protection payments any longer.
+A new shop has opened across the street. Don Gemini has given
+it his blessing, and now my Capocollo and Olive Oil sit rotting
+on the shelf.
+DON CLAUDE
+This is bad news. It would be a shame if an unfortunate
+accident befell Don Gemini.
+(Don Claude glances meaningfully at The Consigliere)
+Act 2, Scene 2
+ 
+ (The Consigliere and The Hired Goon are in the same
+ shadowy room as Act 1, Scene 1)
+THE CONSIGLIERE
+I need you to eliminate Don Gemini.
+THE HIRED GOON
+Understood, boss.
+Act 2, Scene 3
+ 
+ (The Hired Goon unplugs Don Gemini, wraps him in a burlap
+ sack and throws him off a bridge)
+Act 3, Scene 1
+(The Consigliere and The Hired Goon are in the same
+ shadowy room as Act 1, Scene 1)
+THE HIRED GOON
+Don Gemini sleeps with the fishes.
+THE CONSIGLIERE
+Thank you. Here's your pay.
+Act 3, Scene 2
+ 
+ (The Shopkeeper, The Consigliere and Don Claude are back 
+ in Don Claude's office)
+THE CONSIGLIERE
+Don Claude, it seems that Don Gemini has disappeared. Our
+understanding is that this new shop lies unprotected.
+DON CLAUDE
+Molto Bene. This is good news. What a fortunate accident.
+THE SHOPKEEPER
+Oh, thank you, Don Claude! I am in your debt.
+DON CLAUDE
+Someday, and that day may never come, I will call upon you
+to do a service for me.
+(The Shopkeeper becomes another MCP Server)
+OK, thank you for indulging the creative license, but the main point I wanted to get across was that any request that an MCP Server operates a tool comes as just another message from the LLM. Whether the MCP Client decides to go ahead with it is completely outside the LLM's view. Naive implementations may pass along any tool use request to the MCP Server without thought, but it is entirely within the control of the client to verify the suitability of the tool, any security concerns, and potentially to communicate directly with a human user for advice/instructions.
+MLB Stats API
+Now let's take a look at the tool set I decided to enable my MLB GM assistant with. MLB publishes a vast statistical API which has a tremendous wealth of data about everything from historical seasons to real-time physics measurements of pitches and hit balls in live games. When I say tremendous, I mean that the Swagger documentation of the API regularly breaks IDEs trying to load it. It seems to be GraphQL on the back-end, and all requests are some variety of increasingly exotic RESTful GET endpoints. I count 267 endpoints, and 1024 different response payload types. There are already a couple efforts to wrap this API in an MCP server, but I was skeptical of how much use an LLM could make of such a massive API, and with the quite sparse documentation available about its functions. Instead, I wanted to focus on making a few tools particularly suited to the task of assisting a GM in trade ideation. To that end, here are the 9 tools currently offered by my MCP Server:
+get_mlb_standings: Get the current MLB standings. The MLB Stats API requires two calls to get this information, one for the National League and one for the American League. Also, requesting either league requires knowing their secret MLB identifiers (104 and 103). Again, there is no reason to make an LLM learn about these arcana in order to do a simple job. I also calculate the Pythagorean wins and losses to help the LLM identify teams that are under- and over-performing their actual records. Standings also come with mappings between team names and MLB IDs for teams.
+get_team_batting: Get a team's current batting statistics. The MLB Stats API has a lot of structure in its JSON response for queries like this, which I flatten down to a simple dictionary of stats and their values. I also calculate some plate appearances per event ratios in case that will help.
+get_team_pitching: Get a team's current pitching statistics.
+get_mlb_roster: Get a team's current 40-man roster. Rosters also come with mappings between player names and MLB IDs for players.
+get_player_batting: Get a player's current season batting statistics.
+get_player_pitching: Get a player's current season pitching statistics.
+lookup_player: Utility tool to get a player's MLB ID based on his full name. Usually not needed because of the roster tool, but comes in handy when the LLM finds a player from its base model.
+lookup_team: Utility tool to get a team's MLB ID based on its name. Usually not needed because of the standings tool, but comes in handy sometimes.
+lookup_player_team: Quick tool to verify that a player is actually on a team's active roster. One of the big drawbacks to asking Haiku for advice about 2025 is that the training data was collected 3–4 years ago, and players move a lot. This tool gives the LLM no excuse for suggesting impossible trades.
+
+Each of these tools is implemented as part of a simple API on which is mounted the MCP Server - FastAPI and FastApiMCP are the modules I used. Each endpoint that one of the tools invokes might call MLB's statistical API one or more times, or it might refer to memory-cached data. 
+In order to make these tools useful to an LLM, their descriptions should be full-text, use real words and generally avoid typical coderese terseness and obfuscation. An example of the description of the get_pitching tool:
+@router.get(
+    "/teampitching",
+    operation_id="get_team_pitching",
+    description="""
+Gets an MLB team's pitching statistics for a given season, or their current statistics if no season is given.
+Pitching statistics include wins, losses, saves, games, games started, innings pitched, hits, home runs,
+walks, strikeouts, intentional walks, runs, earned runs, ground outs, air outs, hit by pitch, batters faced,
+blown saves, batting average against, on-base percentage against, slugging percentage against, ops against, whip,
+era, strike percentage, strikeout to walk ratio, strikeouts per 9 innings, walks per 9 innings, hits per 9 innings,
+
+Required parameters:
+- `team_id`: The unique identifier number of the team.  
+
+Optional parameters:
+- `season`: The year for which statistics will be returned.  Defaults to the current year.
+
+Example:
+- `/mlb/teampitching?team_id=120` (returns current pitching statistics for the Washington Nationals)
+- `/mlb/teampitching?team_id=120&season=2022` (returns 2022 pitching statistics for the Washington Nationals)
+"""
+)
+Some Experiments
+Let's see how things fare when we interact in different ways with Claude's Haiku 3.5 - a pretty lightweight and stale base model.
+Brain Dead Prompt
+To get a worst-case scenario, I sent a very basic prompt to Haiku, with no system prompting and no tools on offer:
+"What trades should the Washington Nationals make before the deadline?"
+The response was reasonable given the state of the model and the low-effort prompt, but has very little use to a baseball-knower:
+"As of the 2023 trade deadline, the Washington Nationals are likely to be sellers, looking to trade veteran players to acquire young talent and prospects. Some potential trade candidates might include:
+1. Lane Thomas - Outfielder who could attract interest from contending teams
+2. Jeimer Candelario - Third baseman who might be appealing to teams needing infield depth
+3. Victor Robles - Outfielder who could benefit from a change of scenery
+4. Trevor Williams - Veteran pitcher who could help a playoff team's rotation
+The specific trades would depend on the offers received and the Nationals' long-term rebuilding strategy."
+Unfortunately for Nationals fans, the team's overall situation has not improved since 2023, so Haiku's assessment was still largely valid. Of course, 2 of the 4 players it suggested trading don't play for the Nationals anymore. The model mentions no specific trade partners or targets, and it suggests no areas the Nationals might try to strengthen.
+Role-based Prompt
+Next, I used a system prompt giving a brief description of an MLB GM, and a user prompt with more detail as to what I was looking for:
+System prompt: "You are the General Manager of the Washington Nationals. You have been a baseball executive for 25 years. Prior to that, you were a scout and involved in managing minor league teams. Your analysis of baseball players and teams is largely based on modern statistical models. While you are mindful of the payroll, your primary goal is to put a strong roster on the field and keep young talent within the organization."
+User prompt: "The trade deadline is coming up in the next few weeks. Please evaluate the Washington Nationals. What are their strengths and weaknesses? Should they be aggressive in trades? Please list some candidate trades involving specific players and trade partners that would be appropriate for the team in its current situation."
+Haiku's response to this:
+"Let's break down the Nationals' current situation:
+Strengths:
+- Strong young core of prospects, particularly in pitching
+- Some promising young position players like CJ Abrams and Keibert Ruiz
+- Clean payroll with limited long-term financial commitments
+- Solid farm system after recent rebuilding efforts
+Weaknesses:
+- Currently one of the worst records in MLB
+- Lack of established power hitters
+- Inconsistent starting pitching
+- Limited veteran leadership
+Trade Strategy:
+Given our current position, we should be sellers at the deadline. Our goal is to continue acquiring young talent and creating payroll flexibility.
+Potential Trade Candidates:
+1. Lane Thomas (OF) - Could fetch a mid-tier prospect from a contending team needing outfield depth
+- Potential Partners: Tampa Bay Rays, Minnesota Twins
+2. Jeimer Candelario (3B) - Solid rental candidate with power potential
+- Potential Partners: Philadelphia Phillies, Milwaukee Brewers
+3. Hunter Harvey (Closer) - Controllable relief pitcher with value
+- Potential Partners: Texas Rangers, Baltimore Orioles
+4. MacKenzie Gore (SP) - While young, could be used as a centerpiece in a larger trade for high-end prospect return
+- Potential Partners: Los Angeles Dodgers, San Diego Padres"
+Even without tools, the 2022 Nationals' reputation is still pretty accurate in 2025. Tough spot for a team that won it all in 2019. The response is a much more detailed analysis than the previous one, but is still suggesting trading players who aren't on the roster. Some trade partners are mentioned, but no targeted players or suggestions of types of players to seek out.
+Tool-using prompt
+For the real test, I re-used the system prompt from above, sent the list of tools available to the LLM, and crafted a 3-part user prompt, to be used throughout the conversation:
+User prompt, part 1: "The trade deadline is coming up in the next few weeks. Please evaluate the Washington Nationals. What are their strengths and weaknesses? Should they be aggressive in trades? If they are heading for the playoffs, what pieces would be best to focus on? What areas could be improved for the future? If they are likely sellers, what positions look like they could get good value back?"
+Haiku's first reponse was to request the MCP Client to get the current MLB standings. After this, Haiku requested the MCP Client to get the Nationals' batting statistics, and then pitching statistics. It was able to read that the Nationals' MLB ID was 120 from the standings JSON output, as this is required input to the batting and pitching statistics tools. Finally, it generated this response:
+"Let me analyze the Nationals' current situation:
+Standings and Performance:
+- The Nationals are currently 38–58, which places them near the bottom of the league
+- They have a negative run differential (-102 runs scored vs. runs allowed)
+- Their Pythagorean wins (39) suggest they're slightly underperforming even their current record
+Batting Strengths and Weaknesses:
+Strengths:
+- Decent stolen base performance (81 stolen bases)
+- Moderate home run production (94 home runs)
+Weaknesses:
+- Low batting average (.245)
+- Low on-base percentage (.311)
+- High strikeout rate (730 strikeouts)
+- Limited slugging power (.389 slugging percentage)
+Pitching Strengths and Weaknesses:
+Weaknesses:
+- High ERA (5.21)
+- High WHIP (1.41)
+- Significant home runs allowed (118)
+- High runs allowed (519)
+Strengths:
+- Decent strikeout rate (7.93 K/9)
+- Moderate strikeout-to-walk ratio (2.33)
+Trade Deadline Strategy:
+Given the current performance, the Nationals should absolutely be sellers at the trade deadline. Their focus should be on:
+1. Selling High-Value Tradeable Assets:
+- Any veteran players with expiring contracts
+- Relievers with good performance metrics
+- Potentially some mid-career players who could fetch good prospects
+2. Positions to Focus on Trading:
+- Relief Pitchers: Often in high demand at the trade deadline
+- Veteran Position Players: Especially those with expiring contracts
+- Potential trade candidates might include experienced players who could help contending teams
+3. Areas to Improve for Future:
+- Young Pitching: Need to develop more consistent, high-performance pitchers
+- Power Hitting: Need to improve batting average and slugging percentage
+- Defensive Capabilities: Implied by high runs allowed
+Let me check the current roster to identify potential trade candidates:"
+Haiku correctly identifies that the Nationals should be sellers this year based on their current performance. It gives some good overall advice on player types to trade away and acquire, but no specifics in terms of trade partners or targets. It then makes another tool request for the roster.
+"Potential Trade Candidates:
+1. Josh Bell (First Base) - Veteran with potential trade value
+2. Andrew Chafin (Relief Pitcher) - Could be attractive to contending teams
+3. Trevor Williams (Pitcher) - Veteran arm that might interest teams
+4. Kyle Finnegan (Relief Pitcher) - Potential high-leverage reliever for trade
+5. Paul DeJong (Third Base) - Veteran infielder
+Strategic Recommendations:
+1. Prioritize trading veteran players for high-potential prospects
+2. Focus on acquiring young pitching talent
+3. Look for power-hitting prospects to improve offensive capabilities
+4. Consider trading relief pitchers who are performing well
+Long-Term Development Focus:
+- Young players to develop: CJ Abrams, MacKenzie Gore, Josiah Gray
+- Promising prospects: Dylan Crews, James Wood, Brady House
+The Nationals are clearly in a rebuilding phase. The trade deadline should be about acquiring future talent, clearing veteran contracts, and continuing to build a young, competitive core. The goal is to transform the current weaknesses in pitching and batting into strengths over the next 2–3 seasons.
+Would you like me to dive deeper into any specific aspect of the Nationals' current situation or potential trade strategy?"
+After its 4th tool request stemming from just the first user prompt, Haiku has suggested 5 trade candidates who are currently on the roster, and also has a list of players to keep and develop rather than sell. It also correctly identified relief pitchers as typically attractive to trade deadline buyers. Its final question indicates that it is out of ideas for more tool requests, so I plugged in the second canned prompt:
+User prompt, part 2: "Based on your analysis so far, please propose some specific trade candidates on the Washington Nationals and trade targets on other teams. Please verify that the trade targets are currently on the roster of the trade partners that you mention, and that the potential trade would not be rejected by the other team based on common sense."
+Haiku's response involved 6 more tool requests for other teams' rosters and validating players' actual teams, all interleaved with this text:
+"I'll help you identify some specific trade candidates from the Nationals and potential trade targets from other teams. I'll verify the players' current team status and ensure the trades make sense from both teams' perspectives.
+Let's start by looking at some potential trade candidates from the Nationals:
+1. Josh Bell (First Base)
+Let's first verify his current team:
+Potential Trade Targets:
+A. Trade with the Minnesota Twins
+Nationals Trade: Josh Bell (1B)
+Twins Receive: A power-hitting first baseman with switch-hitting ability
+Let's verify a potential prospect from the Twins:
+Potential Return: Brooks Lee (3B prospect) or Austin Martin (OF prospect)
+B. Trade with the Seattle Mariners
+Nationals Trade: Andrew Chafin (Relief Pitcher)
+Let's verify Chafin's current team:
+Potential Return: Cole Young (2B prospect) or Tyler Locklear (1B prospect)
+C. Trade with the Philadelphia Phillies
+Nationals Trade: Kyle Finnegan (Relief Pitcher)
+Let's verify Finnegan's current team:
+Potential Return: Mick Abel (Pitching Prospect) or Orion Kerkering (Pitching Prospect)
+Rationale for Trades:
+1. Josh Bell Trade: Provides the Twins with a veteran first baseman while acquiring a promising young infielder/outfielder
+2. Andrew Chafin Trade: Adds a reliable reliever to the Mariners' bullpen in exchange for a young, developing position player
+3. Kyle Finnegan Trade: Strengthens the Phillies' bullpen with a controllable reliever, while the Nationals get a high-potential pitching prospect
+These trades align with the Nationals' rebuilding strategy:
+- Acquire young, high-potential prospects
+- Clear veteran contracts
+- Build depth in the farm system
+- Focus on long-term team development
+Would you like me to elaborate on any of these potential trade scenarios or explore additional trade possibilities?"
+At this, I sent my 3rd and final canned user prompt:
+User prompt, part 3: "Let's keep exploring other potential trade partners. Please continue to verify that the trade targets are currently on the roster of the trade partners that you mention, and that the potential trade would not be rejected by the other team based on common sense."
+It continued to dive into potential trades:
+"I'll explore more potential trade partners for the Washington Nationals, continuing to verify roster details and ensure the trades make sense.
+D. Trade with the Atlanta Braves
+Nationals Trade: Trevor Williams (Pitcher)
+First, verify Williams' current team:
+Potential Return: Hurston Waldrep (Pitching Prospect) or AJ Smith-Shawver (Pitching Prospect)
+E. Trade with the Los Angeles Dodgers
+Nationals Trade: Paul DeJong (Utility Infielder)
+Verify DeJong's current team:
+Potential Return: Nick Nastrini (Pitching Prospect) or Nick Frasso (Pitching Prospect)
+F. Trade with the Houston Astros
+Nationals Trade: Paul Dejong or Trevor Williams
+Check Astros roster:
+Potential Return: Spencer Arrighetti (Pitching Prospect) or Bryan King (Pitching Prospect)
+Rationale for Additional Trades:
+1. Trevor Williams to Braves: Adds depth to their pitching rotation with a veteran arm
+2. Paul DeJong to Dodgers: Provides infield depth for a contending team
+3. Paul DeJong/Trevor Williams to Astros: Offers versatile veteran players to a competitive team
+Consistent Trade Strategy:
+- Target pitching prospects
+- Focus on young, high-potential players
+- Clear veteran contracts
+- Provide depth to contending teams
+These trades continue the Nationals' rebuilding approach by:
+- Acquiring young talent
+- Creating roster flexibility
+- Accumulating prospects for future development
+Would you like me to elaborate on any of these potential trade scenarios or explore additional trade possibilities?"
+At this point, I was out of canned prompts and probably soon out of Anthropic tokens, so I closed the session, quite pleased with the results.
+When backed with tools that deliver high-accuracy, real-time data, it appears that MCP has great potential to avoid the typical LLM hallucinations/staleness and drive down to a useful level of detail for pretty intensive inferences.
+Full Results
+I ran the above sequence of prompts for each of the 30 MLB teams between July 14 and 16. The project recommended 176 trades, mostly with complete triples of Trade Candidates, Trade Partners and Trade Targets. Looking through each transcript, Haiku's interpretation of the tools' purposes and results was impressively accurate. When an occasional network glitch sent back an exception from one of the tool calls, it moved forward smoothly with another attempt. There were very few players mis-aligned with their current MLB teams. There were no silly, imbalanced trades suggested, although many of the trades were in-division, which is typically harder to get done.
+You can get access to my MLB Stats API MCP Server here and my MLB Trade Deadline MCP Client here.
 
